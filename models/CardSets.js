@@ -11,9 +11,12 @@ const setSchema = new mongoose.Schema({
         type: String
     },
 
-    cards: {
-        type: Array
-    }
+    cards: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Card'
+        }
+    ]
 }) 
 
 var CardSets = mongoose.model("CardSet", setSchema)

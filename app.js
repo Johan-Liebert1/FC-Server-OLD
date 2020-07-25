@@ -9,7 +9,8 @@ const port   = 5000,
       server = http.createServer(app)
 
 
-const setRouter = require('./routes/setsRouter')
+const setRouter   = require('./routes/setsRouter'),
+      cardsRouter = require('./routes/cardsRouter')
 
 //MONGOOSE SETUP
 mongoose.set('useNewUrlParser', true);
@@ -25,7 +26,10 @@ connect.then((db) => {
   console.log("Connected correctly to server");
 }, (err) => { console.log(err); });
 
+
+//ROUTERS
 app.use("/sets", setRouter);
+app.use("/sets", cardsRouter);
 
 
 server.listen(port, host, () => {

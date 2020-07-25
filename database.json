@@ -1,4 +1,4 @@
-[
+[[
     {
       "setName":"English Words",
       "setId":"english-words",
@@ -49,4 +49,61 @@
         {"id":5,"question":"20th Century Boys","answer":"Naoki Urasawa"}
       ]
     }
+  ],
+
+  [
+    {
+        "question": "Disingenious",
+        "answer": "Not candid or sincere by pretending one know less than one actually does"
+    },
+    {
+        "question": "Scrutiny",
+        "answer": "Critical Observation"
+    },
+    {
+        "question": "Assail",
+        "answer": "Make a violent attack on"
+    },
+    {
+        "question": "Eschew",
+        "answer": "Deliberately Avoid Using"
+    },
+    {
+        "question": "Infallible",
+        "answer": "Incapable of making mistakes"
+    },
+    {
+        "question": "Serendipitous",
+        "answer": "Happenning for a good reason"
+    },
+    {
+        "question": "Superflous",
+        "answer": "Unnecessary"
+    },
+    {
+        "question": "Augury",
+        "answer": "An Omen"
+    },
+    {
+        "question": "Asinine",
+        "answer": "Stupid"
+    },
+    {
+        "question": "Abeyance",
+        "answer": "In a temporary state of unuse"
+    }
+],
+
+[
+    {"question":"Monster","answer":"Naoki Urasawa"},
+    {"question":"Berserk","answer":"Kentaro Miura"},
+    {
+      
+      "question":"Legend of the Galactic Heores",
+      "answer":"Yoshiki Tanaka"
+    },
+    {"question":"Mushishi","answer":"Urashibara Yuki"},
+    {"question":"20th Century Boys","answer":"Naoki Urasawa"}
   ]
+
+]
