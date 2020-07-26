@@ -92,18 +92,31 @@
         "question": "Abeyance",
         "answer": "In a temporary state of unuse"
     }
-],
+]
+
+,
 
 [
-    {"question":"Monster","answer":"Naoki Urasawa"},
-    {"question":"Berserk","answer":"Kentaro Miura"},
     {
-      
-      "question":"Legend of the Galactic Heores",
-      "answer":"Yoshiki Tanaka"
+        "question": "Monster",
+        "answer": "Naoki Urasawa"
     },
-    {"question":"Mushishi","answer":"Urashibara Yuki"},
-    {"question":"20th Century Boys","answer":"Naoki Urasawa"}
-  ]
+    {
+        "question": "Berserk",
+        "answer": "Kentaro Miura"
+    },
+    {
+        "question": "Legend of the Galactic Heores",
+        "answer": "Yoshiki Tanaka"
+    },
+    {
+        "question": "Mushishi",
+        "answer": "Urashibara Yuki"
+    },
+    {
+        "question": "20th Century Boys",
+        "answer": "Naoki Urasawa"
+    }
+]
 
 ]

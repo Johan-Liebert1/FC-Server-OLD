@@ -54,22 +54,37 @@ cardsRouter.route('/:setId/cards')
 })
 
 .delete((req, res) => {
-    // CardSets.findOne({setId: req.params.setId})
-    // .then(set => {
-    //     if (set !== null){
-    //         for (var i = set.cards.length - 1; i >= 0 ; i--){
-
-    //             set.cards[i].remove() // probably an error will occur
-                
-    //         }
-    //         res.json(set)
-    //     }else
-    //         res.send(`Set with id: '${req.params.setId}' does not exist`)
-    // }).catch(err => console.log(err))
-    CardSets.updateOne({setId: req.params.setId}, {$pull: {}})
-    .then(resp => res.json(resp))
+    // as deleting all the cards is equivalent to deleting the entire set, no need for this route to be active
+    res.send("DELETE opereation not supported on this end point")
 })
 
+cardsRouter.route("/:setId/cards/:cardId")
+
+.get((req, res) => {
+    Cards.findById(req.params.cardId)
+    .then(card => res.json(card))
+    .catch(err => console.log(err))
+})
+
+// employment news ministry of defence vacancies
+
+.post((req, res) => {
+    res.send("POST operation is not supported on this end point")
+})
+
+.put((req, res) => {
+    // update a certain card using the card id. Can update question/answer or both
+    // findByIdAndUpdate takes care of all the cases, ie. either question or answer or both being empty
+    Cards.findByIdAndUpdate(req.params.cardId, {
+        $set: req.body
+    }, {new: true})
+
+    .then(card => {
+        res.json(`Card Updated to: ${card}`)
+    })
+    
+    .catch(err => console.log(err))
+})
 
 module.exports = cardsRouter
 
