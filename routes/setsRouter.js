@@ -1,44 +1,75 @@
 const express    = require("express"),
       CardSets   = require("../models/CardSets"),
+      Users      = require('../models/Users')
       setRouter  = express.Router(),
       bodyParser = require("body-parser"),
       auth       = require('../auth')
 
 setRouter.use(bodyParser.json())
 
-// /sets
+// /:username/sets
+
 setRouter.route('/')
 
-.get((req, res) => {
-    CardSets.find({}).populate('cards')
-    .then(cardSets => {
+.get(auth.verifyUser, (req, res) => {
+    // console.log('req.user._id in /:username/sets: ', req.user._id)
+    Users.findById(req.user._id).populate('cardsets')
+    .then(user => {
+        
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json")
-        res.json(cardSets);
+        res.json(user);
+        
+        
     })
+    
     .catch(err => console.log(err))
 })
 
-.post((req, res) => {
-    CardSets.create(req.body)
-    .then(cardSet => {
+.post(auth.verifyUser, (req, res) => {
 
-        let setId = cardSet.setName.toLowerCase().replace(" ", "-")
-        cardSet.updateOne({
-            $set : {setId: setId}
-        }, {upsert: true})
-        //upsert - if set to true and no record matched to the query, replacement object is inserted as a new record.
+    Users.findById(req.user._id).populate('cardSets')
 
-        .then(newCardSet => res.json(newCardSet)).catch(err => console.log(err))
-    })
-    .catch(err => console.log(err))
+    .then(user => {
+        
+        let isSetNameUnique = user.cardsets.every((cardSet) => {
+            return cardSet.setName !== req.body.setName
+        })
+
+        if (isSetNameUnique) {
+
+            CardSets.create(req.body)
+
+            .then(cardSet => {
+                console.log("cardSet after CardSets.create: ", cardSet)
+                let setId = cardSet.setName.toLowerCase().replace(" ", "-")
+
+                cardSet.setId = setId
+                cardSet.save()
+                //upsert - if set to true and no record matched to the query, replacement object is inserted as a new record.
+
+                .then(newCardSet => {
+                    user.cardsets.push(newCardSet)
+                    user.save()
+                    console.log("user after user.save(): ", user)
+                })
+            })
+
+            res.json(user)
+
+        } else {
+            res.json("Set Name must be unique")
+        }
+    }).catch(err => console.log(err))
+
 })
 
 .put((req, res) => {
     res.send(`PUT not supported on this route`)
 })
 
-.delete((req, res) => {
+.delete(auth.verifyUser, (req, res) => {
+
     CardSets.deleteMany({})
     
     .then((resp) => {

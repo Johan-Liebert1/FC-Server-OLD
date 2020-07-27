@@ -18,10 +18,12 @@ const userSchema = new mongoose.Schema({
     },
 
     
-    sets: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'CardSet'
-    }
+    cardsets: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'CardSet'
+        }
+    ]
 })
 
 userSchema.plugin(passportLocalMongoose); // this will automatically add support for username and password

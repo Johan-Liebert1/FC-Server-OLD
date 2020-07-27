@@ -35,7 +35,7 @@ connect.then((db) => {
 app.use(passport.initialize())
 
 //ROUTERS
-app.use("/sets", setRouter);
+app.use("/:username/sets", setRouter);
 app.use("/sets", cardsRouter);
 app.use("/users", usersRouter);
 

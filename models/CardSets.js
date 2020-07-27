@@ -4,7 +4,6 @@ const setSchema = new mongoose.Schema({
     setName: {
         type: String,
         required: true,
-        unique: true
     },
 
     setId: {
