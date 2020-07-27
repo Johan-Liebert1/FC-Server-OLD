@@ -16,7 +16,8 @@ const setSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Card'
         }
-    ]
+    ],
+
 }) 
 
 var CardSets = mongoose.model("CardSet", setSchema)

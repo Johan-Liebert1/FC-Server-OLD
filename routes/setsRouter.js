@@ -1,7 +1,8 @@
 const express    = require("express"),
       CardSets   = require("../models/CardSets"),
       setRouter  = express.Router(),
-      bodyParser = require("body-parser");
+      bodyParser = require("body-parser"),
+      auth       = require('../auth')
 
 setRouter.use(bodyParser.json())
 

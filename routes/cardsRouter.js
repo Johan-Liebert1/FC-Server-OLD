@@ -66,7 +66,6 @@ cardsRouter.route("/:setId/cards/:cardId")
     .catch(err => console.log(err))
 })
 
-// employment news ministry of defence vacancies
 
 .post((req, res) => {
     res.send("POST operation is not supported on this end point")
@@ -82,7 +81,7 @@ cardsRouter.route("/:setId/cards/:cardId")
     .then(card => {
         res.json(`Card Updated to: ${card}`)
     })
-    
+
     .catch(err => console.log(err))
 })
 
