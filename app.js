@@ -36,7 +36,7 @@ app.use(passport.initialize())
 
 //ROUTERS
 app.use("/:username/sets", setRouter);
-app.use("/sets", cardsRouter);
+app.use("/:username/sets", cardsRouter);
 app.use("/users", usersRouter);
 
 

@@ -91,17 +91,20 @@ setRouter.route('/')
 
 setRouter.route('/:setId')
 
-.get((req, res) => {
-    CardSets.findOne({setId: req.params.setId}).populate('cards')
-    .then(set => {
-        if (set !== null){
-            res.statusCode = 200
-            res.setHeader("Content-Type", "application/json");
-            res.json(set)
-        }
-        else{
-            res.send(`The set with setId: '${setId}' does not exist`)
-        }
+.get(auth.verifyUser, (req, res) => {
+    Users.findById(req.user._id)
+    .then(user=> {
+        user.cardsets.findOne({setId: req.params.setId}).populate('cards')
+        .then(set => {
+            if (set !== null){
+                res.statusCode = 200
+                res.setHeader("Content-Type", "application/json");
+                res.json(set)
+            }
+            else{
+                res.send(`The set with setId: '${setId}' does not exist`)
+            }
+        })
     })
     .catch(err => console.log(err))
 })

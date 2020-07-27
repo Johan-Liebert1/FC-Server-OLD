@@ -1,8 +1,10 @@
 const express     = require('express'),
       Cards       = require("../models/Cards"),
       CardSets    = require('../models/CardSets'),
+      Users       = require('../models/Users'),
       bodyParser  = require('body-parser'),
-      cardsRouter = express.Router()
+      cardsRouter = express.Router(),
+      auth        = require('../auth')
 
 cardsRouter.use(bodyParser.json())
 
@@ -11,19 +13,22 @@ cardsRouter.use(bodyParser.json())
 
 cardsRouter.route('/:setId/cards')
 
-.get((req, res) => {
-    CardSets.find({setId: req.params.setId}).populate('cards')
-    .then(set => {
-        if (set !== null){
-            res.statusCode = 200
-            res.setHeader("Content-Type", 'application/json')
-            //set is an array containing only one set
-            res.json(set[0].cards)
+.get(auth.verifyUser, (req, res) => {
+    // populating two levels deep
+    Users.findById(req.user._id)
+    .populate({
+        path: 'cardsets',
+        model: CardSets,
+        populate: {
+            path: 'cards',
+            model: Cards
         }
-        else 
-            res.send(`Set with id: '${req.params.setId}' does not exist`)
     })
-    .catch(err => console.log(err))
+
+    .exec((err, user) => {
+        if (err) console.log(err)
+        res.json(user);
+    });
 })
 
 .post((req, res) => {
