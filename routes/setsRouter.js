@@ -69,16 +69,23 @@ setRouter.route('/')
 })
 
 .delete(auth.verifyUser, (req, res) => {
-
-    CardSets.deleteMany({})
-    
-    .then((resp) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json(resp);
-    }, (err) => next(err))
-
-    .catch((err) => next(err));
+    Users.findById(req.user._id)
+    .then(user => {
+        if (user.cardsets.length > 0){
+            for (let i = user.cardsets.length - 1; i >= 0 ; i--){
+                CardSets.findByIdAndRemove(user.cardsets[i])
+                .then(set => set.save()).catch(err => console.log(err))
+                user.cardsets.pop()
+                user.save()
+            }
+            
+            res.send("Deleted Successfully")
+        }
+        else {
+            res.send("No sets found to delete")
+        }
+    })
+    .catch(err => console.log(err))
 })
 
 
