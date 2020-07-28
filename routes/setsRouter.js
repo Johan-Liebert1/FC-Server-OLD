@@ -1,6 +1,7 @@
 const express    = require("express"),
       CardSets   = require("../models/CardSets"),
       Users      = require('../models/Users')
+const Cards = require("../models/Cards")
       setRouter  = express.Router(),
       bodyParser = require("body-parser"),
       auth       = require('../auth')
@@ -93,35 +94,61 @@ setRouter.route('/:setId')
 
 .get(auth.verifyUser, (req, res) => {
     Users.findById(req.user._id)
-    .then(user=> {
-        user.cardsets.findOne({setId: req.params.setId}).populate('cards')
-        .then(set => {
-            if (set !== null){
-                res.statusCode = 200
-                res.setHeader("Content-Type", "application/json");
-                res.json(set)
-            }
-            else{
-                res.send(`The set with setId: '${setId}' does not exist`)
-            }
-        })
+    .populate({
+        path: 'cardsets',
+        model: CardSets,
+        populate: {
+            path: 'cards',
+            model: Cards
+        }
+    })
+
+    .then(user => {
+
+        let requestedSet = user.cardsets.filter(set => set.setId === req.params.setId)
+
+        if (requestedSet.length > 0) {
+            res.statusCode = 200
+            res.setHeader("Content-Type", "application/json");
+            res.json(requestedSet)
+        }
+
+        else {
+            res.send(`The set with setId: '${req.params.setId}' does not exist`)
+        }
+
+    
     })
     .catch(err => console.log(err))
 })
 
-.post((req, res) => {
+.post(auth.verifyUser, (req, res) => {
     res.send(`POST not supported on this route`)
 })
 
-.put((req, res) => {
+.put(auth.verifyUser, (req, res) => {
     // only setName can be updated here
-    let newSetId = req.body.setName.toLowerCase().replace(" ", "-")
-    CardSets.findOneAndUpdate({setId: req.params.setId}, {
-        $set: {setName: req.body.setName, setId: newSetId}
-    }, {new: true})
-    .then(newSet => {
-        res.json(`Updated Set: ${newSet}`)
+    Users.findById(req.user._id)
+    .populate('cardsets')
+    
+    .then(user => {
+        let newSetId = req.body.setName.toLowerCase().replace(" ", "-")
+        for (let i = 0; i < user.cardsets.length; i++){
+
+
+            if (user.cardsets[i].setId === req.params.setId){
+
+
+                CardSets.findByIdAndUpdate(user.cardsets[i]._id, {
+                    $set: {setName: req.body.setName, setId: newSetId}
+                }, {new: true})
+
+                .then(newCardSet => res.json(newCardSet)).catch(err => console.log(err))
+                break
+            }
+        }
     })
+    
     .catch(err => console.log(err))
 })
 

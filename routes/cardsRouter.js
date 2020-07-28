@@ -25,6 +25,8 @@ cardsRouter.route('/:setId/cards')
         }
     })
 
+    //have to send only the cards data and not the entire user data
+    
     .exec((err, user) => {
         if (err) console.log(err)
         res.json(user);
