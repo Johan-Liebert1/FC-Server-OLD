@@ -71,11 +71,11 @@ setRouter.route('/')
 
 .delete(auth.verifyUser, (req, res) => {
     Users.findById(req.user._id)
+    .populate('cardsets')
     .then(user => {
         if (user.cardsets.length > 0){
             for (let i = user.cardsets.length - 1; i >= 0 ; i--){
-                CardSets.findByIdAndRemove(user.cardsets[i])
-                .then(set => set.save()).catch(err => console.log(err))
+                CardSets.findByIdAndRemove(user.cardsets[i]._id)
                 user.cardsets.pop()
                 user.save()
             }
@@ -89,7 +89,7 @@ setRouter.route('/')
     .catch(err => console.log(err))
 })
 
-
+// /:username/sets
 setRouter.route('/:setId')
 
 .get(auth.verifyUser, (req, res) => {
@@ -130,7 +130,7 @@ setRouter.route('/:setId')
     // only setName can be updated here
     Users.findById(req.user._id)
     .populate('cardsets')
-    
+
     .then(user => {
         let newSetId = req.body.setName.toLowerCase().replace(" ", "-")
         for (let i = 0; i < user.cardsets.length; i++){
@@ -152,11 +152,19 @@ setRouter.route('/:setId')
     .catch(err => console.log(err))
 })
 
-.delete((req, res) => {
-    CardSets.findOneAndDelete({setId: req.params.setId})
-    .then(new_sets => {
-        res.send(`Deleted Successfully`)
-        
+.delete(auth.verifyUser, (req, res) => {
+    Users.findById(req.user._id)
+    .populate('cardsets')
+    .then(user => {
+        for (let i = 0; i < user.cardsets.length; i++){
+            if (user.cardsets[i].setId === req.params.setId){
+                console.log("inside delete: ", user.cardsets[i])
+                CardSets.findByIdAndRemove(user.cardsets[i]._id)
+                .then(resp => console.log(resp))
+                break
+            }
+        }
+        res.json(`Set with id: '${req.params.setId}' deleted`)
     })
     .catch(err => console.log(err))
 })
