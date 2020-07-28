@@ -15,7 +15,7 @@ cardsRouter.route('/:setId/cards')
 
 .get(auth.verifyUser, (req, res) => {
     // populating two levels deep
-    Users.findById(req.user._id)
+    Users.findById({_id: req.user._id})
     .populate({
         path: 'cardsets',
         model: CardSets,
@@ -24,40 +24,53 @@ cardsRouter.route('/:setId/cards')
             model: Cards
         }
     })
-
     //have to send only the cards data and not the entire user data
-    
-    .exec((err, user) => {
-        if (err) console.log(err)
-        res.json(user);
-    });
+
+    .then(user => {
+        for (let i = 0; i < user.cardsets.length; i++){
+            if (user.cardsets[i].setId === req.params.setId){
+                console.log(user.cardsets[i].cards)
+                res.json(user.cardsets[i].cards)
+                break
+            }
+        }
+    })
+    .catch(err => console.log(err))
 })
 
-.post((req, res) => {
-    CardSets.findOne({setId: req.params.setId})
+.post(auth.verifyUser, (req, res) => {
+    Users.findById(req.user._id)
+    .then(user => {
 
-    .then(cardSet => {
-        if (cardSet !== null){
-            Cards.create(req.body)
-            
-            //assuming cards to be an arrary every time, even for 1 entry
+        CardSets.findOne({setId: req.params.setId})
 
-            .then(cards => {
-                console.log(cards)
-                cardSet.cards.push(...cards)
+        .then(cardSet => {
+            if (cardSet !== null && user.cardsets.includes(cardSet._id)){
+                Cards.create(req.body)
+                
+                //assuming cards to be an arrary every time, even for 1 entry
 
-                cardSet.save()
-                // res.json(arr)
+                .then(cards => {
+                    console.log(cards)
+                    cardSet.cards.push(...cards)
 
-            }).catch(err => console.log(err))
+                    cardSet.save()
+                    // res.json(arr)
 
-            res.send('Posted Successfully')
-        }
+                }).catch(err => console.log(err))
 
-        else
-            res.send(`Set with id: '${req.params.setId}' does not exist`)
+                res.send('Posted Successfully')
+            }
 
-    }).catch(err => err)
+            else
+                res.send(`Set with id: '${req.params.setId}' does not exist`)
+
+        }).catch(err => err)
+    })
+})
+
+.put((req, res) => {
+    res.send("PUT not supported on this route")
 })
 
 .delete((req, res) => {
