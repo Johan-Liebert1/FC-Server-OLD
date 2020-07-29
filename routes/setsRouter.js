@@ -1,7 +1,7 @@
 const express    = require("express"),
       CardSets   = require("../models/CardSets"),
-      Users      = require('../models/Users')
-const Cards = require("../models/Cards")
+      Users      = require('../models/Users'),
+      Cards      = require("../models/Cards"),
       setRouter  = express.Router(),
       bodyParser = require("body-parser"),
       auth       = require('../auth')
@@ -15,11 +15,11 @@ setRouter.route('/')
 .get(auth.verifyUser, (req, res) => {
     // console.log('req.user._id in /:username/sets: ', req.user._id)
     Users.findById(req.user._id).populate('cardsets')
+
     .then(user => {
-        
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json")
-        res.json(user);
+        res.json(user.cardsets);
         
         
     })
@@ -29,7 +29,7 @@ setRouter.route('/')
 
 .post(auth.verifyUser, (req, res) => {
 
-    Users.findById(req.user._id).populate('cardSets')
+    Users.findById(req.user._id).populate('cardsets')
 
     .then(user => {
         
@@ -43,7 +43,7 @@ setRouter.route('/')
 
             .then(cardSet => {
                 console.log("cardSet after CardSets.create: ", cardSet)
-                let setId = cardSet.setName.toLowerCase().replace(" ", "-")
+                let setId = cardSet.setName.toLowerCase().replace(/\s/g,"-")
 
                 cardSet.setId = setId
                 cardSet.save()
@@ -132,7 +132,7 @@ setRouter.route('/:setId')
     .populate('cardsets')
 
     .then(user => {
-        let newSetId = req.body.setName.toLowerCase().replace(" ", "-")
+        let newSetId = req.body.setName.toLowerCase().replace(/\s/g,"-")
         for (let i = 0; i < user.cardsets.length; i++){
 
 
@@ -146,6 +146,10 @@ setRouter.route('/:setId')
                 .then(newCardSet => res.json(newCardSet)).catch(err => console.log(err))
                 break
             }
+
+            else{
+                res.send(`Set with setId : '${req.params.setId}' not found`)
+            }
         }
     })
     
@@ -156,12 +160,16 @@ setRouter.route('/:setId')
     Users.findById(req.user._id)
     .populate('cardsets')
     .then(user => {
+
         for (let i = 0; i < user.cardsets.length; i++){
+
             if (user.cardsets[i].setId === req.params.setId){
-                console.log("inside delete: ", user.cardsets[i])
+
+                // console.log("inside delete: ", user.cardsets[i])
                 CardSets.findByIdAndRemove(user.cardsets[i]._id)
                 .then(resp => console.log(resp))
                 break
+
             }
         }
         res.json(`Set with id: '${req.params.setId}' deleted`)

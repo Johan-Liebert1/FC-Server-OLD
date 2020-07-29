@@ -105,5 +105,12 @@ cardsRouter.route("/:setId/cards/:cardId")
     .catch(err => console.log(err))
 })
 
+.delete((req, res) => {
+    Cards.findByIdAndDelete(req.params.cardId)
+    .then(card => {
+        res.json('Card: ', card, 'deleted')
+    })
+})
+
 module.exports = cardsRouter
 
