@@ -97,10 +97,6 @@ setRouter.route('/:setId')
     .populate({
         path: 'cardsets',
         model: CardSets,
-        populate: {
-            path: 'cards',
-            model: Cards
-        }
     })
 
     .then(user => {

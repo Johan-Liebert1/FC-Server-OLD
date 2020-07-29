@@ -4,7 +4,8 @@ const express     = require('express'),
       Users       = require('../models/Users'),
       bodyParser  = require('body-parser'),
       cardsRouter = express.Router(),
-      auth        = require('../auth')
+      auth        = require('../auth'),
+      helpers     = require('../helperFunctions')
 
 cardsRouter.use(bodyParser.json())
 
@@ -29,7 +30,7 @@ cardsRouter.route('/:setId/cards')
     .then(user => {
         for (let i = 0; i < user.cardsets.length; i++){
             if (user.cardsets[i].setId === req.params.setId){
-                console.log(user.cardsets[i].cards)
+                // console.log(user.cardsets[i].cards)
                 res.json(user.cardsets[i].cards)
                 break
             }
@@ -41,20 +42,23 @@ cardsRouter.route('/:setId/cards')
 .post(auth.verifyUser, (req, res) => {
     Users.findById(req.user._id)
     .then(user => {
-
-        CardSets.findOne({setId: req.params.setId})
+        // console.log(user)
+        CardSets.find({setId: req.params.setId})
 
         .then(cardSet => {
-            if (cardSet !== null && user.cardsets.includes(cardSet._id)){
+            if (cardSet.length > 0){
+                // console.log(cardSet) entering
+                setToBeUpdated = helpers.set_associated_with_user(user.cardsets, cardSet)
+                // console.log(setToBeUpdated)
                 Cards.create(req.body)
                 
                 //assuming cards to be an arrary every time, even for 1 entry
 
                 .then(cards => {
-                    console.log(cards)
-                    cardSet.cards.push(...cards)
+                    console.log(setToBeUpdated)
+                    setToBeUpdated.cards.push(...cards)
 
-                    cardSet.save()
+                    setToBeUpdated.save()
                     // res.json(arr)
 
                 }).catch(err => console.log(err))
